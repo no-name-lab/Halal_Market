@@ -3,7 +3,7 @@ from .views import *
 from rest_framework import routers
 
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r'users', SellerProfileViewSet, basename='users-list')
 router.register(r'buyer', BuyerProfileViewSet, basename='buyer_list')
 router.register(r'sellers', SellerAdminViewSet, basename='sellers')
@@ -13,8 +13,7 @@ router.register(r'sellers', SellerAdminViewSet, basename='sellers')
 urlpatterns = [
     path('', include(router.urls)),
     path('stats/', seller_stats, name='users-stats'),
-
-
+    path('admin/dashboard/', AdminDashboardAPIView.as_view(), name='admin-dashboard'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),

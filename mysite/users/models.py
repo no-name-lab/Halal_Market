@@ -6,6 +6,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+
 class UserProfile(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Администратор'),
@@ -45,7 +46,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 class SellerProfile(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='seller_profile')
     name_shop = models.CharField(max_length=120, null=True, blank=True)
-    # categories = models.ManyToManyField('halal_app.Category', blank=True)
+    categories = models.ManyToManyField('halal_app.Category', blank=True)
     image = models.ImageField(upload_to='marketer_images/', null=True, blank=True)
     description = models.TextField(blank=True)
     is_blocked = models.BooleanField(default=False)

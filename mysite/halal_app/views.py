@@ -1,6 +1,6 @@
 from rest_framework import generics, viewsets
 from rest_framework import filters
-from .models import Category, Product, Save, SaveItem, Cart, CartItem
+from .models import Category, Product, Save, SaveItem, Cart, CartItem, Review
 from .serializers import (
     CategoryDetailSerializer,
     ProductListSerializer,
@@ -12,6 +12,7 @@ from .serializers import (
     CartSerializer,
     CartItemSerializer,
     CartItemListSerializer,
+    ReviewSerializer
 )
 
 
@@ -22,7 +23,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.filter(parent__isnull=True)
-    serializer_class = CategorySimpleSerializer
+    serializer_class = CategoryDetailSerializer
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
@@ -49,6 +50,11 @@ class ProductDetailView(generics.RetrieveAPIView):
     lookup_field = 'pk'
 
 
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
 class SaveViewSet(viewsets.ModelViewSet):
     queryset = Save.objects.all()
     serializer_class = SaveSerializer
@@ -66,6 +72,7 @@ class SaveItemListApiView(generics.ListAPIView):
 class SaveItemDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SaveItem.objects.all()
     serializer_class = SaveItemListSerializer
+
 
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()

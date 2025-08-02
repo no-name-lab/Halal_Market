@@ -132,7 +132,8 @@ class BuyerProfileSerializers(serializers.ModelSerializer):
 
 class SellerProfileSerializers(serializers.ModelSerializer):
     is_blocked = serializers.BooleanField(source='user.is_blocked', read_only=True)
+    user = UserProfilesSerializer(read_only=True)
     class Meta:
         model = SellerProfile
-        fields = ['id', 'user', 'image', 'full_name', 'shop_name', 'email', 'phone_number', 'description', 'is_blocked']
+        fields = ['id', 'user', 'image', 'description', 'name_shop', 'is_blocked']
 

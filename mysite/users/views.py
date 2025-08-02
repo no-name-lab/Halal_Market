@@ -1,6 +1,7 @@
 from rest_framework import viewsets, generics, status
 from .serializers import *
 from .models import *
+from halal_app.models import Product, Order
 from rest_framework.response import Response
 from rest_framework.decorators import action, permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
@@ -8,6 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import update_session_auth_hash
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
+from rest_framework.views import APIView
+from .permissions import IsAdminUserCustom
 
 
 class SellerAdminViewSet(viewsets.ModelViewSet):
@@ -112,7 +115,6 @@ class UserProfilesDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         return UserProfile.objects.filter(username=self.request.user.username)
 
 
-
 class BuyerProfileViewSet(viewsets.ModelViewSet):
     queryset = BuyerProfile.objects.all()
     serializer_class = BuyerProfileSerializers
@@ -122,3 +124,19 @@ class SellerProfileViewSet(viewsets.ModelViewSet):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileSerializers
 
+
+class AdminDashboardAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUserCustom]
+
+    def get(self, request):
+        users_count = UserProfile.objects.count()
+        sellers_count = SellerProfile.objects.count()
+        products_count = Product.objects.count()
+        orders_count = Order.objects.count()
+
+        return Response({
+            "users": users_count,
+            "sellers": sellers_count,
+            "products": products_count,
+            "orders": orders_count,
+        })

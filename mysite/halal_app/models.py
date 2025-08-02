@@ -13,6 +13,7 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 
+
 class Brand(models.Model):
     brand_name = models.CharField(max_length=100)
 
@@ -29,7 +30,6 @@ class Product(models.Model):
     weight = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Вес продукта (в кг)', null=True, blank=True)
     composition = models.TextField(verbose_name='состав', null=True, blank=True)
     storage_condition = models.TextField(verbose_name='условия хранение', null=True, blank=True)
-    #     packaging = models.TextField(verbose_name='упаковка')
     equipment = models.TextField(null=True, blank=True, verbose_name='комплектация')
     seller = models.ForeignKey(SellerProfile, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -80,7 +80,11 @@ class Review(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
+    reply = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer} - {self.product}"
 
 
 class Save(models.Model):

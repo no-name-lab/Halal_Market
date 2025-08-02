@@ -16,13 +16,14 @@ from .views import (
     CartItemDetailAPIView,
     CartItemStatusListApiView,
     CartItemStatusDetailApiView,
-    CategoryViewSet
+    ReviewViewSet
 )
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'save', SaveViewSet, basename='savee')
 router.register(r'cart', CartViewSet, basename='cart')
-router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'review', ReviewViewSet, basename='review')
+
 
 
 urlpatterns = [
@@ -36,7 +37,7 @@ urlpatterns = [
     path('cart_item/<int:pk>/', CartItemDetailAPIView.as_view(), name='cart_item_detail'),
 
     path('categories/', CategoryListView.as_view(), name='category-list'),                  # без подкатегорий
-    path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),     # с подкатегориями
+    # path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),     # с подкатегориями
     path('categories/<int:category_id>/products/', ProductListByCategoryView.as_view(), name='products-by-category'),
 
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),

@@ -4,10 +4,19 @@ from .models import (Category, Brand, Product, ProductImage, Customer, Order, Or
 from users.serializers import SellerProfileSerializers, BuyerProfileSerializers
 
 
-class RecursiveCategorySerializer(serializers.Serializer):
-    def to_representation(self, value):
-        serializer = CategoryDetailSerializer(value, context=self.context)
-        return serializer.data
+class RecursiveCategorySerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source='category_name')
+    image = serializers.ImageField(source='category_image')
+    subcategories = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'title', 'image', 'subcategories']
+
+    def get_subcategories(self, obj):
+        if obj.subcategories.exists():
+            return RecursiveCategorySerializer(obj.subcategories.all(), many=True).data
+        return []
 
 
 class CategorySimpleSerializer(serializers.ModelSerializer):
@@ -32,6 +41,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['image']
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'product', 'rating', 'customer', 'comment', 'reply', 'created_at']
+
+
 class ProductListSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(read_only=True, many=True)
     class Meta:
@@ -41,6 +56,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
+    review = ReviewSerializer(read_only=True, many=True)
 
     class Meta:
         model = Product
@@ -82,7 +98,6 @@ class CartItemListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['id', 'items', 'cart', 'quantity', 'status']
-
 
 
 class CartSerializer(serializers.ModelSerializer):
