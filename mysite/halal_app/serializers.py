@@ -11,7 +11,7 @@ class RecursiveCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'image', 'subcategories']
+        fields = ['title', 'image', 'subcategories']
 
     def get_subcategories(self, obj):
         if obj.subcategories.exists():

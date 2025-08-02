@@ -5,6 +5,7 @@ from .views import (
     CategoryListView,
     CategoryDetailView,
     ProductListByCategoryView,
+    ProductListView,
     ProductDetailView,
     SaveViewSet,
     CartViewSet,
@@ -38,9 +39,11 @@ urlpatterns = [
 
     path('categories/', CategoryListView.as_view(), name='category-list'),                  # без подкатегорий
     # path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),     # с подкатегориями
+
+    path('products/', ProductListView.as_view(), name='products_read'),
+    path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
     path('categories/<int:category_id>/products/', ProductListByCategoryView.as_view(), name='products-by-category'),
 
-    path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
 
     path('cart_status/', CartItemStatusListApiView.as_view(), name='cart_current_status'),
     path('cart_status/<int:pk>/', CartItemStatusDetailApiView.as_view(), name='cart_current_status_detail'),

@@ -35,7 +35,7 @@ class CategoryDetailView(generics.RetrieveAPIView):
 class ProductListByCategoryView(generics.ListAPIView):
     serializer_class = ProductListSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'description']  # По каким полям ищем
+    search_fields = ['product_name', 'description']  # По каким полям ищем
 
     def get_queryset(self):
         category_id = self.kwargs['category_id']
@@ -43,6 +43,14 @@ class ProductListByCategoryView(generics.ListAPIView):
 
         # Фильтр поиска применяется автоматически через filter_backends
         return queryset
+
+
+class ProductListView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['product_name', 'description']
+
 
 class ProductDetailView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
