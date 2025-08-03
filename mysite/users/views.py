@@ -140,3 +140,64 @@ class AdminDashboardAPIView(APIView):
             "products": products_count,
             "orders": orders_count,
         })
+
+
+
+
+class SendEmailCodeView(APIView):
+    def post(self, request):
+        serializer = SendEmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        user, created = User.objects.get_or_create(email=email, defaults={'username': email})
+
+        code = EmailVerification.generate_code()
+        EmailVerification.objects.create(user=user, code=code)
+
+        try:
+            send_mail(
+                subject='Код подтверждения',
+                message=f'Ваш код подтверждения: {code}',
+                from_email='your_email@gmail.com',
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "Код отправлен на email."}, status=status.HTTP_200_OK)
+
+
+
+
+class VerifyEmailCodeView(APIView):
+    def post(self, request):
+        serializer = VerifyCodeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            verification = EmailVerification.objects.filter(
+                user=user, code=code, is_used=False
+            ).latest('created_at')
+        except EmailVerification.DoesNotExist:
+            return Response({"error": "Неверный код."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if verification.is_expired():
+            return Response({"error": "Код истёк."}, status=status.HTTP_400_BAD_REQUEST)
+
+        verification.is_used = True
+        verification.save()
+
+        user.is_active = True  # или user.email_verified = True, если у тебя есть такое поле
+        user.save()
+
+        return Response({"message": "Email успешно подтверждён."}, status=status.HTTP_200_OK)
