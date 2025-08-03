@@ -38,7 +38,7 @@ urlpatterns = [
     path('cart_item/<int:pk>/', CartItemDetailAPIView.as_view(), name='cart_item_detail'),
 
     path('categories/', CategoryListView.as_view(), name='category-list'),                  # без подкатегорий
-    # path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),     # с подкатегориями
+    path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),     # с подкатегориями
 
     path('products/', ProductListView.as_view(), name='products_read'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
