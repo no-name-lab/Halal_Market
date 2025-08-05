@@ -59,6 +59,12 @@ class ShopRequestAdmin(admin.ModelAdmin):
         updated = queryset.update(is_approved=True)
         self.message_user(request, f"{updated} магазинов одобрено.")
 
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'code', 'is_used', 'created_at')
+    list_filter = ('is_used', 'created_at')
+    search_fields = ('user__email', 'code')
+
 
 admin.site.register(UserProfile)
 admin.site.register(BuyerProfile)

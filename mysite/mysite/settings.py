@@ -162,7 +162,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'zhekshenovaktan@gmail.com'          # твой Gmail
-EMAIL_HOST_PASSWORD = 'ggbc ftbt ydoo grex'
+EMAIL_HOST_PASSWORD = 'jxak riqw funk chvk'
 
 
 AUTH_USER_MODEL = 'users.UserProfile'

@@ -3,7 +3,7 @@ from .views import *
 from rest_framework import routers
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'users', SellerProfileViewSet, basename='users-list')
 router.register(r'buyer', BuyerProfileViewSet, basename='buyer_list')
 router.register(r'sellers', SellerAdminViewSet, basename='sellers')
