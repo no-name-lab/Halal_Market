@@ -3,7 +3,7 @@ from .views import *
 from rest_framework import routers
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'users', SellerProfileViewSet, basename='users-list')
 router.register(r'buyer', BuyerProfileViewSet, basename='buyer_list')
 router.register(r'sellers', SellerAdminViewSet, basename='sellers')
@@ -22,4 +22,8 @@ urlpatterns = [
     path('password_reset/verify_code/', verify_reset_code, name='verify_reset_code'),
     path('user/', UserProfilesListAPIView.as_view(), name='user_list'),
     path('user/<int:pk>/', UserProfilesDetailAPIView.as_view(), name='user_detail'),
+
+    path('send_email/', SendEmailCodeView.as_view(), name='send_email_code'),
+    path('verify_email/', VerifyEmailCodeView.as_view(), name='verify_email_code'),
+
 ]
