@@ -3,7 +3,7 @@ from .models import *
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import SellerProfile, UserProfile
+from .models import SellerProfile, UserProfile, ShopRequest
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 from .models import SellerProfile
@@ -46,6 +46,24 @@ class SellerProfileAdmin(admin.ModelAdmin):
         updated = queryset.update(is_blocked=False)
         self.message_user(request, f"{updated} продавцов разблокированы.")
     unblock_sellers.short_description = "Разблокировать выбранных продавцов"
+
+#это чтобы открыть свой магазин
+
+@admin.register(ShopRequest)
+class ShopRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'phone_verified', 'is_approved')
+    list_filter = ('phone_verified', 'is_approved')
+    actions = ['approve_shops']
+
+    def approve_shops(self, request, queryset):
+        updated = queryset.update(is_approved=True)
+        self.message_user(request, f"{updated} магазинов одобрено.")
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'code', 'is_used', 'created_at')
+    list_filter = ('is_used', 'created_at')
+    search_fields = ('user__email', 'code')
 
 
 admin.site.register(UserProfile)

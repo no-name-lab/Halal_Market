@@ -137,3 +137,14 @@ class SellerProfileSerializers(serializers.ModelSerializer):
         model = SellerProfile
         fields = ['id', 'user', 'image', 'description', 'name_shop', 'is_blocked']
 
+class SendEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class VerifyCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6)
+
+    def validate_code(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Код должен состоять из цифр.")
+        return value
