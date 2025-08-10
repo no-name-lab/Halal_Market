@@ -4,6 +4,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django_rest_passwordreset.models import ResetPasswordToken
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
@@ -21,6 +24,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
 
 
 class CustomLoginSerializer(serializers.Serializer):
@@ -55,8 +60,12 @@ class CustomLoginSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(user)
         return {
             'user': {
+                'id': user.id,
                 'username': user.username,
                 'email': user.email,
+                'phone_number': str(user.phone_number) if user.phone_number else None,
+                'role': user.role,
+                'avatar': user.avatar.url if user.avatar else None,
             },
             'access': str(refresh.access_token),
             'refresh': str(refresh),

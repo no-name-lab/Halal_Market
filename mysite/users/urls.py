@@ -22,6 +22,7 @@ urlpatterns = [
     path('password_reset/verify_code/', verify_reset_code, name='verify_reset_code'),
     path('user/', UserProfilesListAPIView.as_view(), name='user_list'),
     path('user/<int:pk>/', UserProfilesDetailAPIView.as_view(), name='user_detail'),
+    path('user/me/', CurrentUserView.as_view(), name='current_user'),
 
     path('send_email/', SendEmailCodeView.as_view(), name='send_email_code'),
     path('verify_email/', VerifyEmailCodeView.as_view(), name='verify_email_code'),

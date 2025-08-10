@@ -11,6 +11,26 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from .permissions import IsAdminUserCustom
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'phone_number': str(user.phone_number) if user.phone_number else None,
+            'role': user.role,
+            'avatar': user.avatar.url if user.avatar else None,
+        }
+        return Response(data)
+
 
 
 class SellerAdminViewSet(viewsets.ModelViewSet):

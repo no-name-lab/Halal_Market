@@ -8,6 +8,7 @@ class RecursiveCategorySerializer(serializers.ModelSerializer):
     title = serializers.CharField(source='category_name')
     image = serializers.ImageField(source='category_image')
     subcategories = serializers.SerializerMethodField()
+    # НЕ включаем id здесь, чтобы не отдавать id подкатегорий
 
     class Meta:
         model = Category
@@ -31,14 +32,16 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     subcategories = RecursiveCategorySerializer(many=True, read_only=True)
     id = serializers.IntegerField()
 
-
     class Meta:
         model = Category
         fields = ['id', 'title', 'image', 'subcategories']
 
-    def get_id(self, obj):
-        return self.context.get('custom_id', obj.id)
-
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        # Если это подкатегория (то есть parent не None), убрать subcategories
+        if instance.parent is not None:
+            rep['subcategories'] = []
+        return rep
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -65,7 +68,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()  # или можно оставить название категории
     images = ProductImageSerializer(many=True, read_only=True)
-    reviews = ReviewSerializer(many=True, read_only=True)  # тут отзывы
+    reviews = ReviewSerializer(many=True, read_only=True)  # тут отзыв
     category_subcategories = serializers.SerializerMethodField()
 
     class Meta:

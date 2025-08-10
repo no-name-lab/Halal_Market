@@ -8,3 +8,6 @@ __pycache__/
 # Игнорировать окружения
 venv/
 .env
+mysite/db.sqlite3
+*.pyc
+__pycache__/
