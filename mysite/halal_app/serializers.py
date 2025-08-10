@@ -8,6 +8,7 @@ class RecursiveCategorySerializer(serializers.ModelSerializer):
     title = serializers.CharField(source='category_name')
     image = serializers.ImageField(source='category_image')
     subcategories = serializers.SerializerMethodField()
+    # НЕ включаем id здесь, чтобы не отдавать id подкатегорий
 
     class Meta:
         model = Category
@@ -29,10 +30,22 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source='category_name')
     image = serializers.ImageField(source='category_image')
     subcategories = RecursiveCategorySerializer(many=True, read_only=True)
+    # Не добавляем поле id для подкатегорий, либо исключаем id в RecursiveCategorySerializer
 
     class Meta:
         model = Category
         fields = ['id', 'title', 'image', 'subcategories']
+
+    def get_id(self, obj):
+        return self.context.get('custom_id', obj.id)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        # Если это подкатегория (то есть parent не None), убрать subcategories
+        if instance.parent is not None:
+            rep['subcategories'] = []
+        return rep
+
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -49,18 +62,29 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(read_only=True, many=True)
+    category = CategoryDetailSerializer(read_only=True)  # вложенная категория с подкатегориями
+
     class Meta:
         model = Product
-        fields = ['id', 'product_name', 'price', 'weight', 'images']
+        fields = ['id', 'product_name', 'price', 'weight', 'images', 'category']
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = serializers.StringRelatedField()  # или можно оставить название категории
+    images = ProductImageSerializer(many=True, read_only=True)
     review = ReviewSerializer(read_only=True, many=True)
+    category_subcategories = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = "__all__"  # или перечисли поля + category_subcategories
+
+    def get_category_subcategories(self, obj):
+        category = obj.category
+        if category and category.parent is None:  # если категория — главная
+            return RecursiveCategorySerializer(category.subcategories.all(), many=True).data
+        return []  # если категория — подкатегория, подкатегорий нет
+
 
 
 class SaveItemSerializer(serializers.ModelSerializer):

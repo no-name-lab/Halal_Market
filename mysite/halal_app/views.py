@@ -1,6 +1,9 @@
 from rest_framework import generics, viewsets
 from rest_framework import filters
 from .models import Category, Product, Save, SaveItem, Cart, CartItem, Review
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from .serializers import (
     CategoryDetailSerializer,
     ProductListSerializer,
@@ -21,13 +24,21 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategoryDetailSerializer
 
 
-class CategoryListView(generics.ListAPIView):
-    queryset = Category.objects.filter(parent__isnull=True)
-    serializer_class = CategoryDetailSerializer
+class CategoryListView(APIView):
+    def get(self, request):
+        categories = Category.objects.filter(parent__isnull=True).order_by('id')
+        serialized = []
+        for index, category in enumerate(categories, start=1):
+            serializer = CategoryDetailSerializer(category)
+            data = serializer.data
+            data['custom_id'] = index  # Нумерация только для фронта
+            serialized.append(data)
+        return Response(serialized)
+
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(parent__isnull=True)
     serializer_class = CategoryDetailSerializer
     lookup_field = 'pk'
 
